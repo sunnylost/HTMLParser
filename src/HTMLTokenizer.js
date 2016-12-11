@@ -142,18 +142,17 @@
         },
         AMPERSAND                   = '&',
         APOSTROPHE                  = '\'',
+        CARRIAGE_RETURN             = '\u000d',
         CHARACTER_TABULATION        = '\u0009',
         EQUALS                      = '=',
         EXCLAMATION                 = '!',
         FORM_FEED                   = '\u000c',
-        GRAVE_ACCENT                = '`',
         GREATER_THAN                = '>',
         HYPHEN_MINUS                = '-',
         LESS_THAN                   = '<',
         LINE_FEED                   = '\u000a',
         QUESTION                    = '?',
         QUOTATION                   = '"',
-        LEFT_SQUARE_BRACKET         = '[',
         RIGHT_SQUARE_BRACKET        = ']',
         SEMICOLON                   = ';',
         SOLIDUS                     = '/',
@@ -1679,6 +1678,10 @@
 
         function emitCharToken( char ) {
             char = char || nextChar
+
+            if ( char === CARRIAGE_RETURN ) {
+                char = LINE_FEED
+            }
 
             if ( char.length > 1 ) {
                 for ( var i = 0; i < char.length; i++ ) {
