@@ -862,7 +862,7 @@
                     curState = STATE.data
                     emitTagToken( curTagToken )
                 } else {
-                    curTagToken = createTagToken( TOKEN_TYPE.attribute )
+                    curTagToken = createTagToken( TOKEN_TYPE.startTag )
                     curTagToken.attributes.push( curAttribute = {
                         name : '',
                         value: ''
