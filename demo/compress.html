@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        * {
+            padding : 0;
+            margin  : 0;
+        }
+
+        .wrap {
+            width  : 80%;
+            margin : auto;
+        }
+
+        #source, #result {
+            position   : relative;
+            display    : block;
+            width      : 100%;
+            height     : 200px;
+            margin     : 20px auto;
+            border     : 1px solid #ccc;
+            overflow-y : scroll;
+        }
+
+        label {
+            position         : relative;
+            top              : 10px;
+            left             : 0;
+            height           : 20px;
+            padding          : 3px 5px;
+            line-height      : 20px;
+            border-radius    : 5px;
+            color            : #fff;
+            background-color : #907f3d;
+        }
+
+        label:nth-child(2) {
+            float : right;
+        }
+
+        #compress {
+            display          : block;
+            width            : 50%;
+            height           : 40px;
+            margin           : auto;
+            padding          : 3px 5px;
+            font-size        : 22px;
+            color            : #fff;
+            border           : 0;
+            border-radius    : 5px;
+            background-color : #20c3e8;
+            outline          : 0;
+        }
+
+        #compress:hover {
+            cursor           : pointer;
+            color            : #fff;
+            background-color : #55dafe;
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <label for="source">Source</label>
+    <label for="source" class="length">Length:<span class="num">0</span></label>
+    <textarea id="source"></textarea>
+</div>
+
+<button id="compress">Compress</button>
+<div class="wrap">
+    <label for="result">Result</label>
+    <label for="result" class="length">Length:<span class="num">0</span></label>
+    <textarea id="result"></textarea>
+</div>
+<script src="../src/HTMLNamedCharacterReferences.js"></script>
+<script src="../src/HTMLTokenizer.js"></script>
+<script>
+    function compress( html, opts ) {
+        var tokenType = HTMLTokenizer.type,
+            tokens    = HTMLTokenizer.tokenizer( html ),
+            result    = '',
+            buffer    = ''
+
+        tokens.forEach( function ( token ) {
+            var attributes = token.attributes
+
+            if ( token.type !== tokenType.character && buffer.length ) {
+                result += buffer.replace( /^\s+/, ' ' ).replace( /\s+$/, ' ' )
+                buffer = ''
+            }
+
+            switch ( token.type ) {
+            case tokenType.doctype:
+                //TODO
+                result += '<!DOCTYPE ' + token.name + '>'
+                break
+
+            case tokenType.startTag:
+                result += '<' + token.tagName + ( attributes.length ? ' ' + attributes.map( function ( obj ) {
+                            return obj.name + '="' + obj.value + '"'
+                        } ).join( ' ' ) : '' ) +
+                    ( token.selfClosing ? '/' : '' ) + '>'
+                break
+
+            case tokenType.endTag:
+                result += '</' + token.tagName + '>'
+                break
+
+            case tokenType.character:
+                buffer += token.data
+                break
+
+            case tokenType.comment:
+                if ( !opts.removeComment ) {
+                    result += '<!--' + token.data + '-->'
+                }
+                break
+            }
+        } )
+
+        return result
+    }
+
+    var sourceEl = document.getElementById( 'source' ),
+        resultEl = document.getElementById( 'result' )
+
+    sourceEl.oninput = function () {
+        sourceEl.parentNode.querySelector( '.num' ).innerHTML = sourceEl.value.length
+    }
+
+    document.getElementById( 'compress' ).onclick = function () {
+        resultEl.value = compress( sourceEl.value, {
+            removeComment: true
+        } )
+
+        resultEl.parentNode.querySelector( '.num' ).innerHTML = resultEl.value.length
+    }
+</script>
+</body>
+</html>
