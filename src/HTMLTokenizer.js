@@ -1686,14 +1686,14 @@
             if ( char.length > 1 ) {
                 for ( var i = 0; i < char.length; i++ ) {
                     tokens.push( {
-                        type : TOKEN_TYPE.character,
-                        value: char[ i ]
+                        type: TOKEN_TYPE.character,
+                        data: char[ i ]
                     } )
                 }
             } else {
                 tokens.push( {
-                    type : TOKEN_TYPE.character,
-                    value: char
+                    type: TOKEN_TYPE.character,
+                    data: char
                 } )
             }
         }
@@ -1774,5 +1774,8 @@
         }
     }
 
-    return tokenizer
+    return {
+        tokenizer: tokenizer,
+        type     : TOKEN_TYPE
+    }
 } ))
